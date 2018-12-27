@@ -47,7 +47,7 @@ class Schema {
   private fields : Field[]
 
   constructor(private properties : SchemaProperties) {
-    if (!_.has(properties, 'field')) {
+    if (!_.has(properties, 'fields')) {
       console.warn("[Schema] Warning : missing 'fields' property");
     }
 
