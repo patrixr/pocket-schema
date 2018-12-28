@@ -6,7 +6,7 @@
   "author": "Patrick R",
   "license": "MIT",
   "scripts": {
-    "test": "mocha --colors test/*.test.js",
+    "test": "nyc mocha --colors test/*.test.js",
     "test:watch": "mocha --bail --colors --watch test/*.test.js",
     "tsc": "tsc",
     "postinstall": "npm run tsc",
@@ -17,6 +17,7 @@
     "chai": "^4.2.0",
     "doctoc": "^1.4.0",
     "mocha": "^5.2.0",
+    "nyc": "^13.1.0",
     "typescript": "^3.2.2"
   },
   "dependencies": {

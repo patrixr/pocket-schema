@@ -76,37 +76,37 @@ The following validation options are available :
 <!--PocketTypes:start-->
 * `any` 
 
-* `array`  - options: 
+* `array`  - options:
 	* `items?` A field definition of the expected array items
 
-* `date`  - options: 
+* `date`  - options:
 	* `format?` The expected date format (defaults to YYYY-MM-DD)
 
 * `datetime` 
 
-* `email`  - options: 
+* `email`  - options:
 	* `match?` A regular expression to match the email against
 
-* `map`  - options: 
+* `map`  - options:
 	* `items?` A field definition of the expected map items
 
-* `multiselect`  - options: 
+* `multiselect`  - options:
 	* `options` List or options to select from. An async function can also be passed
 
-* `number`  - options: 
+* `number`  - options:
 	* `min?` Minimum allowed value
 	* `max?` Maximum allowed value
 
-* `object`  - options: 
+* `object`  - options:
 	* `schema?` Schema used to validate the object against
 
-* `password`  - options: 
+* `password`  - options:
 	* `minLength?` The minimum length of the password
 
-* `select`  - options: 
+* `select`  - options:
 	* `options` List or options to select from. An async function can also be passed
 
-* `text`  - options: 
+* `text`  - options:
 	* `minLength?` The minimum length of the string
 	* `maxLength?` The maximum length of the string
 	* `match?` A regular expression to match the string against
@@ -116,6 +116,7 @@ The following validation options are available :
 * `timestamp` 
 
 <!--PocketTypes:end-->
+
 
 
 

@@ -22,7 +22,7 @@ for (let typeName in types) {
   const { options } = types[typeName] || {};
   const hasOptions = _.keys(options).length > 0;
 
-  output += `* \`${typeName}\` ${hasOptions ? ' - options: ' : ''}\n`;
+  output += `* \`${typeName}\` ${hasOptions ? ' - options:' : ''}\n`;
   for (let option in options) {
     const desc = options[option];
     output += `\t* \`${option}\` ${desc}\n`
