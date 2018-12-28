@@ -4,6 +4,20 @@ Validates records against a schema.
 
 Intended to be used within [Pocket CMS](https://github.com/patrixr/pocket-cms)
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Getting started](#getting-started)
+  - [Installation](#installation)
+  - [Usage](#usage)
+- [Options](#options)
+- [Supported types](#supported-types)
+- [Custom validators](#custom-validators)
+- [Adding custom types](#adding-custom-types)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## Getting started
 
 ### Installation
@@ -60,7 +74,57 @@ The following validation options are available :
 ## Supported types
 
 <!--PocketTypes:start-->
+* `any` 
+
+* `array`  - options: 
+	* `items?` A field definition of the expected array items
+
+* `date`  - options: 
+	* `format?` The expected date format (defaults to YYYY-MM-DD)
+
+* `datetime` 
+
+* `email`  - options: 
+	* `match?` A regular expression to match the email against
+
+* `map`  - options: 
+	* `items?` A field definition of the expected map items
+
+* `multiselect`  - options: 
+	* `options` List or options to select from. An async function can also be passed
+
+* `number`  - options: 
+	* `min?` Minimum allowed value
+	* `max?` Maximum allowed value
+
+* `object`  - options: 
+	* `schema?` Schema used to validate the object against
+
+* `password`  - options: 
+	* `minLength?` The minimum length of the password
+
+* `select`  - options: 
+	* `options` List or options to select from. An async function can also be passed
+
+* `text`  - options: 
+	* `minLength?` The minimum length of the string
+	* `maxLength?` The maximum length of the string
+	* `match?` A regular expression to match the string against
+
+* `time` 
+
+* `timestamp` 
+
 <!--PocketTypes:end-->
+
+
+
+
+
+
+
+
+
 
 ## Custom validators
 

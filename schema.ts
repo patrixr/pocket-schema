@@ -43,6 +43,10 @@ class Schema {
     REGISTERED_TYPES = {};
   }
 
+  static allTypes() {
+    return REGISTERED_TYPES;
+  }
+
   //
   // ---- Instance members
   //

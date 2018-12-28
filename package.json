@@ -10,10 +10,12 @@
     "test:watch": "mocha --bail --colors --watch test/*.test.js",
     "tsc": "tsc",
     "postinstall": "npm run tsc",
-    "prepublish": "npm run tsc"
+    "prepublish": "npm run tsc",
+    "document": "node scripts/document.js && doctoc ./README.md"
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "doctoc": "^1.4.0",
     "mocha": "^5.2.0",
     "typescript": "^3.2.2"
   },
