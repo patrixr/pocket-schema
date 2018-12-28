@@ -8,12 +8,12 @@ interface DateField extends Field {
 
 export default Schema.registerType('date', {
   options: {
-    'format': 'The expected date format (defaults to YYYY-MM-DD)'
+    'format?': 'The expected date format (defaults to YYYY-MM-DD)'
   },
   validate(data, field : DateField) {
     const format = field.format || 'YYYY-MM-DD';
     if (!moment(data, format, true).isValid()) {
-      return `Property '${field.name}' should be a valid date (${format})`;
+      return `Property '${field.path}' should be a valid date (${format})`;
     }
     return null;
   }

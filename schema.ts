@@ -55,13 +55,16 @@ class Schema {
   }
 
   normalize(fields : any) : Field[] {
-    fields = _.isArray(fields) ? fields : _.map(fields, (f, name) => _.extend(f, { name }));
-    return _.map(fields, (f) => {
-      return _.isString(f) ? { type: f } : f;
+    if (_.isArray(fields)) {
+      return fields;
+    }
+    return _.map(fields, (f, name) => {
+      let field = _.isString(f) ? { type : f } : f;
+      return _.extend(field, { name });
     });
   }
 
-  validate(payload : object, opts : ValidationOptions = {}) : ValidationResults {
+  async validate(payload : object, opts : ValidationOptions = {}) : Promise<ValidationResults> {
     const errors  = [] as string[];
     const data    = _.cloneDeep(payload);
     const {
@@ -73,37 +76,40 @@ class Schema {
       // console.log("TODO");
     }
 
-    _.each(this.fields, (field) => {
-      const type = Schema.getType(field.type);
+    for (let idx in this.fields) {
+      const field = this.fields[idx];
+      const type  = Schema.getType(field.type);
+
+      field.path = opts.parentKey ? `${opts.parentKey}.${field.name}` : field.name;
 
       if (!type) {
-        return errors.push(`Property '${field.name}' has an unknown type '${field.type}'`);
+        errors.push(`Property '${field.path}' has an unknown type '${field.type}'`);
+        break;
       }
 
       if (!_.has(data, field.name)) {
         if (field.default) {
           data[field.name] = field.default;
         } else if (field.required && !ignoreRequired) {
-          errors.push(`Property '${field.name}' is missing'`);
-          return;
+          errors.push(`Property '${field.path}' is missing'`);
+          continue;
         } else {
-          return;
+          continue;
         }
       }
 
-      let errs = type.validate(data[field.name], field);
+      let errs = await type.validate(data[field.name], field, opts);
       if (errs) {
         errs = _.isArray(errs) ? errs : [ errs ];
         Array.prototype.push.apply(errors, errs);
       }
-    });
+    }
 
     return {
       valid: errors.length === 0,
       errors,
       data
     };
-
   }
 }
 

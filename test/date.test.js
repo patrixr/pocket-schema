@@ -18,15 +18,15 @@ describe('DATE', () => {
       }
     });
 
-    it("Should accept properly formatted dates", () => {
-      let { errors } = person.validate({
+    it("Should accept properly formatted dates", async () => {
+      let { errors } = await person.validate({
         birthDate: "1972-10-02"
       });
       errors.should.have.lengthOf(0);
     });
 
-    it("Should not accept badly formatted dates", () => {
-      let { errors } = person.validate({
+    it("Should not accept badly formatted dates", async () => {
+      let { errors } = await person.validate({
         birthDate: "10/1927-13"
       });
       errors.should.have.lengthOf(1);
@@ -35,8 +35,8 @@ describe('DATE', () => {
       );
     });
 
-    it("Should support the format option to specify the expected date format", () => {
-      let { errors } = person.validate({
+    it("Should support the format option to specify the expected date format", async () => {
+      let { errors } = await person.validate({
         birthDate2: "10/1927-11"
       });
       errors.should.have.lengthOf(0);

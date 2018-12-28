@@ -8,15 +8,15 @@ interface PasswordField extends Field {
 
 Schema.registerType('password', {
   options: {
-    'minLength': 'The minimum length of the password'
+    'minLength?': 'The minimum length of the password'
   },
   validate(data, field : PasswordField) {
     if (!_.isString(data)) {
-      return `Property '${field.name}' should be a string`;
+      return `Property '${field.path}' should be a string`;
     }
     const minLength = field.minLength || 1;
     if (data.length < minLength) {
-      return `Property '${field.name}' should be of at least ${minLength} character(s)`;
+      return `Property '${field.path}' should be of at least ${minLength} character(s)`;
     }
     return null;
   }

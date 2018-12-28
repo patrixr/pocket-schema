@@ -31,22 +31,22 @@ _.each([
         }
       });
 
-      it("Should accept string values", () => {
-        let { errors } = person.validate({
+      it("Should accept string values", async () => {
+        let { errors } = await person.validate({
           name: "freddie"
         });
         errors.should.have.lengthOf(0);
       });
 
-      it("Should accept empty string values", () => {
-        let { errors } = person.validate({
+      it("Should accept empty string values", async () => {
+        let { errors } = await person.validate({
           name: ""
         });
         errors.should.have.lengthOf(0);
       });
 
-      it("Should reject non string values", () => {
-        let { errors } = person.validate({
+      it("Should reject non string values", async () => {
+        let { errors } = await person.validate({
           name: 28
         });
         errors.should.have.lengthOf(1);
@@ -55,8 +55,8 @@ _.each([
         );
       });
 
-      it("Should support minLength options", () => {
-        let { errors } = person.validate({
+      it("Should support minLength options", async () => {
+        let { errors } = await person.validate({
           longName: "freddie"
         });
         errors.should.have.lengthOf(1);
@@ -64,16 +64,17 @@ _.each([
           "Property 'longName' should have 8 or more characters"
         );
 
-        person
-          .validate({
+        (
+          await person.validate({
             longName: "freddie mercury"
           })
-          .errors
-          .should.have.lengthOf(0);
+        )
+        .errors
+        .should.have.lengthOf(0);
       });
 
-      it("Should support maxLength options", () => {
-        let { errors } = person.validate({
+      it("Should support maxLength options", async () => {
+        let { errors } = await person.validate({
           shortName: "freddie"
         });
         errors.should.have.lengthOf(1);
@@ -81,16 +82,17 @@ _.each([
           "Property 'shortName' should have no more than 4 characters"
         );
 
-        person
-          .validate({
+        (
+          await person.validate({
             shortName: "fred"
           })
-          .errors
-          .should.have.lengthOf(0);
+        )
+        .errors
+        .should.have.lengthOf(0);
       });
 
-      it("Should be match-able against a regular expression", () => {
-        let { errors } = person.validate({
+      it("Should be match-able against a regular expression", async () => {
+        let { errors } = await person.validate({
           band: "qwin"
         });
         errors.should.have.lengthOf(1);
@@ -98,9 +100,11 @@ _.each([
           "Property 'band' should match /Que+n/i"
         );
 
-        person.validate({
-          band: "queen"
-        })
+        (
+          await person.validate({
+            band: "queen"
+          })
+        )
         .errors
         .should.have.lengthOf(0);
       });

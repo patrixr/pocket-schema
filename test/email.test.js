@@ -14,15 +14,15 @@ describe('EMAIL', () => {
       }
     });
 
-    it("Should accept properly formatted emails", () => {
-      let { errors } = person.validate({
+    it("Should accept properly formatted emails", async () => {
+      let { errors } = await person.validate({
         email: "my@email.com"
       });
       errors.should.have.lengthOf(0);
     });
 
-    it("Should not accept empty string values", () => {
-      let { errors } = person.validate({
+    it("Should not accept empty string values", async () => {
+      let { errors } = await person.validate({
         email: ""
       });
       errors.should.have.lengthOf(1);
@@ -31,8 +31,8 @@ describe('EMAIL', () => {
       );
     });
 
-    it("Should reject non string values", () => {
-      let { errors } = person.validate({
+    it("Should reject non string values", async () => {
+      let { errors } = await person.validate({
         email: 28
       });
       errors.should.have.lengthOf(1);
@@ -41,8 +41,8 @@ describe('EMAIL', () => {
       );
     });
 
-    it("Should not accept badly formatted emails", () => {
-      let { errors } = person.validate({
+    it("Should not accept badly formatted emails", async () => {
+      let { errors } = await person.validate({
         email: "helloworld"
       });
       errors.should.have.lengthOf(1);

@@ -6,27 +6,20 @@ interface EmailField extends Field {
   match? : RegExp
 }
 
-const validators = {
-  match(data : string, field : Field, regex : RegExp) {
-    if (!regex.test(data)) {
-      return `Property '${field.name}' should match ${regex.toString()}`;
-    }
-  }
-};
-
 export default Schema.registerType('email', {
   options: {
-    'match': 'A regular expression to match the email against'
+    'match?': 'A regular expression to match the email against'
   },
-  validate(data, field : Field) {
+  validate(data, field : EmailField) {
     if (!_.isString(data) || !/.+\@.+\..+/.test(data)) {
-      return `Property '${field.name}' should be a valid email address`;
+      return `Property '${field.path}' should be a valid email address`;
     }
 
-    return _.chain(this.options)
-      .filter(opt => _.has(field, opt))
-      .map(opt => validators[opt](data, field, field[opt]))
-      .compact()
-      .value();
+    const regex = field.match;
+    if (regex && regex.test && !regex.test(data)) {
+      return `Property '${field.path}' should match ${regex.toString()}`;
+    }
+
+    return null;
   }
 });

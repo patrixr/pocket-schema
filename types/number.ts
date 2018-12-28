@@ -13,21 +13,23 @@ function value(val : number|undefined, defaultVal : number) : Number{
 
 export default Schema.registerType('number', {
   options: {
-    'min': 'Minimum allowed value',
-    'max': 'Maximum allowed value'
+    'min?': 'Minimum allowed value',
+    'max?': 'Maximum allowed value'
   },
   validate(val, field : NumberField) {
     if (!_.isFinite(val)) {
-      return `Property '${field.name}' should be a number`;
+      return `Property '${field.path}' should be a number`;
     }
+
     const minimum = value(field.min, -Infinity);
     const maximum = value(field.max, Infinity);
     const errors = [] as string[];
     if (val < minimum) {
-      errors.push(`Property '${field.name}' should be equal or greater than ${field.min}`);
+      errors.push(`Property '${field.path}' should be equal or greater than ${field.min}`);
     }
+    console.log(field, val);
     if (val > maximum) {
-      errors.push(`Property '${field.name}' should equal or lower than ${field.max}`);
+      errors.push(`Property '${field.path}' should equal or lower than ${field.max}`);
     }
     return errors;
   }

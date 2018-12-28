@@ -18,15 +18,15 @@ describe('PASSWORD', () => {
       }
     });
 
-    it("Should accept strings", () => {
-      let { errors } = person.validate({
+    it("Should accept strings", async () => {
+      let { errors } = await person.validate({
         password: "myP@ssword"
       });
       errors.should.have.lengthOf(0);
     });
 
-    it("Should not accept empty string values", () => {
-      let { errors } = person.validate({
+    it("Should not accept empty string values", async () => {
+      let { errors } = await person.validate({
         password: ""
       });
       errors.should.have.lengthOf(1);
@@ -35,8 +35,8 @@ describe('PASSWORD', () => {
       );
     });
 
-    it("Should support the minLength option", () => {
-      let { errors } = person.validate({
+    it("Should support the minLength option", async () => {
+      let { errors } = await person.validate({
         password2: "qwe"
       });
       errors.should.have.lengthOf(1);
@@ -45,8 +45,8 @@ describe('PASSWORD', () => {
       );
     });
 
-    it("Should reject non string values", () => {
-      let { errors } = person.validate({
+    it("Should reject non string values", async () => {
+      let { errors } = await person.validate({
         password: 28
       });
       errors.should.have.lengthOf(1);
