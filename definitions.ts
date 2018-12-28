@@ -8,7 +8,7 @@ export interface Field {
   path:       string,
   required?:  true,
   default?:   any,
-  validator?(data: any, field: Field): Errors,
+  validate?(data: any, field: Field): Errors,
 }
 
 export interface SchemaProperties {

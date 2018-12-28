@@ -127,7 +127,7 @@ describe("Schema", () => {
         fields: {
           name: {
             type: 'any',
-            validator(data, field) {
+            validate(data, field) {
               return data === "foo" ? null : "it isn't foo";
             }
           }

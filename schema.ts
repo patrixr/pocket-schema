@@ -87,8 +87,8 @@ class Schema {
     const errors  = [] as string[];
     const data    = _.cloneDeep(payload);
     const {
-      additionalProperties,
-      ignoreRequired
+      additionalProperties = true,
+      ignoreRequired = false
     } = {
       ...this.properties,
       ...opts
@@ -132,9 +132,9 @@ class Schema {
       let errs = await type.validate(data[field.name], field, opts);
       let noErrors = !errs || !errs.length;
 
-      if (noErrors && _.isFunction(field.validator)) {
+      if (noErrors && _.isFunction(field.validate)) {
         // ---> use custom validator
-        errs = field.validator(data[field.name], field);
+        errs = field.validate(data[field.name], field);
       }
 
       if (errs) {
