@@ -27,7 +27,6 @@ export default Schema.registerType('number', {
     if (val < minimum) {
       errors.push(`Property '${field.path}' should be equal or greater than ${field.min}`);
     }
-    console.log(field, val);
     if (val > maximum) {
       errors.push(`Property '${field.path}' should equal or lower than ${field.max}`);
     }

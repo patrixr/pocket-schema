@@ -53,7 +53,6 @@ describe("NUMBER", () => {
     });
 
     it("Should support the 'max' option", async () => {
-      console.log('maxxxx');
       let { errors } = await person.validate({
         pinCode: 10890
       });
