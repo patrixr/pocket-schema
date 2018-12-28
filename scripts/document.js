@@ -19,10 +19,12 @@ console.log("--> Reading types");
 for (let typeName in types) {
   console.log(`----> ${typeName}`);
 
-  const { options } = types[typeName] || {};
+  const { options, aliases = [] } = types[typeName] || {};
   const hasOptions = _.keys(options).length > 0;
 
-  output += `* \`${typeName}\` ${hasOptions ? ' - options:' : ''}\n`;
+  aliases.unshift(typeName);
+
+  output += `* \`${aliases.join('|')}\` ${hasOptions ? ' - options:' : ''}\n`;
   for (let option in options) {
     const desc = options[option];
     output += `\t* \`${option}\` ${desc}\n`

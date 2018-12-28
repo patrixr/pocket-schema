@@ -78,7 +78,7 @@ The following validation options are available :
 <!--PocketTypes:start-->
 * `any` 
 
-* `array`  - options:
+* `array|list`  - options:
 	* `items?` A field definition of the expected array items
 
 * `date`  - options:
@@ -99,16 +99,16 @@ The following validation options are available :
 	* `min?` Minimum allowed value
 	* `max?` Maximum allowed value
 
-* `object`  - options:
+* `object|json`  - options:
 	* `schema?` Schema used to validate the object against
 
 * `password`  - options:
 	* `minLength?` The minimum length of the password
 
-* `select`  - options:
+* `select|enum`  - options:
 	* `options` List or options to select from. An async function can also be passed
 
-* `text`  - options:
+* `text|string`  - options:
 	* `minLength?` The minimum length of the string
 	* `maxLength?` The maximum length of the string
 	* `match?` A regular expression to match the string against
@@ -118,6 +118,8 @@ The following validation options are available :
 * `timestamp` 
 
 <!--PocketTypes:end-->
+
+
 
 
 
