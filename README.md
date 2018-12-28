@@ -1,5 +1,7 @@
 # Pocket schema
 
+![](https://travis-ci.org/patrixr/pocket-cms.svg?branch=master)
+
 Validates records against a schema. 
 
 Intended to be used within [Pocket CMS](https://github.com/patrixr/pocket-cms)
