@@ -1,11 +1,6 @@
 const _       = require("lodash");
 const chai    = require("chai");
 const Schema  = require("..");
-// const {
-//   SUPPORTED_TYPES,
-//   TYPE_ASSERTIONS,
-//   ALL_TYPES
-// } = require("../bak_types");
 
 const { expect } = chai;
 chai.should();

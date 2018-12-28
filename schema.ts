@@ -18,8 +18,9 @@ let REGISTERED_TYPES = new Object() as {
  */
 class Schema {
 
+  //
   // ---- Static members
-
+  //
   static registerType(name : string, type : Type) : Type {
     REGISTERED_TYPES[name] = type;
     return type;
@@ -42,18 +43,30 @@ class Schema {
     REGISTERED_TYPES = {};
   }
 
-  // Instance members
+  //
+  // ---- Instance members
+  //
 
   private fields : Field[]
+  private properties : SchemaProperties
 
-  constructor(private properties : SchemaProperties) {
+  constructor(properties : SchemaProperties) {
     if (!_.has(properties, 'fields')) {
       console.warn("[Schema] Warning : missing 'fields' property");
     }
 
+    this.properties = { additionalProperties: true, ...properties };
     this.fields = properties.fields = this.normalize(properties.fields);
   }
 
+  /**
+   * Transforms the schema into a normalized format
+   * Map schemas are transformed into arrays
+   *
+   * @param {*} fields
+   * @returns {Field[]}
+   * @memberof Schema
+   */
   normalize(fields : any) : Field[] {
     if (_.isArray(fields)) {
       return fields;
@@ -64,16 +77,31 @@ class Schema {
     });
   }
 
+  /**
+   * Data validation method
+   *
+   * @param payload
+   * @param opts
+   */
   async validate(payload : object, opts : ValidationOptions = {}) : Promise<ValidationResults> {
     const errors  = [] as string[];
     const data    = _.cloneDeep(payload);
     const {
       additionalProperties,
       ignoreRequired
-    } = _.extend({}, this.properties, opts);
+    } = {
+      ...this.properties,
+      ...opts
+    };
 
     if (!additionalProperties) {
-      // console.log("TODO");
+      // --> check for keys that are not specified by the schema
+      _.each(_.keys(data), (key) => {
+        if (!_.find(this.fields, ['name', key])) {
+          let path = opts.parentKey ? `${opts.parentKey}.${key}` : key;
+          errors.push(`Property '${path}' is not allowed`)
+        }
+      });
     }
 
     for (let idx in this.fields) {
@@ -83,22 +111,32 @@ class Schema {
       field.path = opts.parentKey ? `${opts.parentKey}.${field.name}` : field.name;
 
       if (!type) {
+        // ---> This type hasn't been registered
         errors.push(`Property '${field.path}' has an unknown type '${field.type}'`);
         break;
       }
 
-      if (!_.has(data, field.name)) {
+      if (!_.has(data, field.name) || data[field.name] === null) {
+        // ---> The field is missing
         if (field.default) {
           data[field.name] = field.default;
-        } else if (field.required && !ignoreRequired) {
-          errors.push(`Property '${field.path}' is missing'`);
-          continue;
         } else {
+          if (field.required && !ignoreRequired) {
+            errors.push(`Property '${field.path}' is missing'`);
+          }
           continue;
         }
       }
 
+      // --> run type validation
       let errs = await type.validate(data[field.name], field, opts);
+      let noErrors = !errs || !errs.length;
+
+      if (noErrors && _.isFunction(field.validator)) {
+        // ---> use custom validator
+        errs = field.validator(data[field.name], field);
+      }
+
       if (errs) {
         errs = _.isArray(errs) ? errs : [ errs ];
         Array.prototype.push.apply(errors, errs);

@@ -7,7 +7,8 @@ export interface Field {
   type:       string,
   path:       string,
   required?:  true,
-  default?:   any
+  default?:   any,
+  validator?(data: any, field: Field): Errors,
 }
 
 export interface SchemaProperties {
@@ -32,5 +33,5 @@ export interface ValidationResults {
 export interface Type {
   options?: { [key:string]:string },
   aliases?: string[],
-  validate(any, Field, ValidationOptions?): Errors|Promise<Errors>
+  validate(data: any, field: Field, opts?: ValidationOptions): Errors|Promise<Errors>
 }
