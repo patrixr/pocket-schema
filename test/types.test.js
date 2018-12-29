@@ -31,7 +31,9 @@ const SUPPORTED_TYPES = [
   'multiselect',
   'array',
   'map',
-  'any'
+  'any',
+  'boolean',
+  'checkbox'
 ];
 
 const ALIASES = {
