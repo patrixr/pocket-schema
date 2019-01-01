@@ -8,6 +8,8 @@ export interface Field {
   path:       string,
   required?:  true,
   default?:   any,
+  computed?:  boolean,
+  compute?(data: any): any,
   validate?(data: any, field: Field): Errors,
 }
 
@@ -27,7 +29,8 @@ export interface ValidationOptions {
 export interface ValidationResults {
   valid:    boolean,
   errors:   Errors,
-  data:     any
+  data:     object,
+  computed: object,
 }
 
 export interface Type {

@@ -4,8 +4,17 @@ import {
   Field,
   Type,
   ValidationOptions,
-  ValidationResults
+  ValidationResults,
+  Errors
 } from './definitions'
+
+
+function merge(arr, value) {
+  if (value) {
+    const values = _.isArray(value) ? value : [ value ];
+    Array.prototype.push.apply(arr, values);
+  }
+}
 
 let REGISTERED_TYPES = new Object() as {
   [key:string]:Type
@@ -60,7 +69,7 @@ class Schema {
     }
 
     this.properties = { additionalProperties: true, ...properties };
-    this.fields = properties.fields = this.normalize(properties.fields);
+    this.fields = properties.fields = this._normalize(properties.fields);
   }
 
   /**
@@ -71,7 +80,7 @@ class Schema {
    * @returns {Field[]}
    * @memberof Schema
    */
-  normalize(fields : any) : Field[] {
+  _normalize(fields : any) : Field[] {
     if (_.isArray(fields)) {
       return fields;
     }
@@ -82,6 +91,40 @@ class Schema {
   }
 
   /**
+   * Check for any key that has not been defined
+   *
+   * @param record
+   * @param opts
+   */
+  findInvalidFields(record, opts : ValidationOptions = {}) : Errors {
+    const errors = [] as string[];
+    _.each(_.keys(record), (key) => {
+      if (!_.find(this.fields, ['name', key])) {
+        let path = opts.parentKey ? `${opts.parentKey}.${key}` : key;
+        errors.push(`Property '${path}' is not allowed`)
+      }
+    });
+    return errors;
+  }
+
+  /**
+   * Sets values for computed properties
+   *
+   * @param data
+   * @param fields
+   */
+  async compute(data, fields = this.fields) {
+    for (let field of fields) {
+      if (field.computed) {
+        if (!field.compute) {
+          throw `Computed field '${field.name}' is missing the compute(data) method`;
+        }
+        data[field.name] = await field.compute(data);
+      }
+    }
+  }
+
+  /**
    * Data validation method
    *
    * @param payload
@@ -89,7 +132,7 @@ class Schema {
    */
   async validate(payload : object, opts : ValidationOptions = {}) : Promise<ValidationResults> {
     const errors  = [] as string[];
-    const data    = _.cloneDeep(payload);
+    const record  = _.cloneDeep(payload);
     const {
       additionalProperties = true,
       ignoreRequired = false
@@ -100,57 +143,73 @@ class Schema {
 
     if (!additionalProperties) {
       // --> check for keys that are not specified by the schema
-      _.each(_.keys(data), (key) => {
-        if (!_.find(this.fields, ['name', key])) {
-          let path = opts.parentKey ? `${opts.parentKey}.${key}` : key;
-          errors.push(`Property '${path}' is not allowed`)
-        }
-      });
+      merge(errors, this.findInvalidFields(record, opts));
     }
 
-    for (let idx in this.fields) {
-      const field = this.fields[idx];
-      const type  = Schema.getType(field.type);
+    const nonComputedFields = _.filter(this.fields, (f) => !f.computed);
+    const computedFields    = _.filter(this.fields, ['computed', true]);
+    const fieldSets         = [ nonComputedFields, computedFields ];
 
-      field.path = opts.parentKey ? `${opts.parentKey}.${field.name}` : field.name;
+    for (let fields of fieldSets) {
 
-      if (!type) {
-        // ---> This type hasn't been registered
-        errors.push(`Property '${field.path}' has an unknown type '${field.type}'`);
+      if (errors.length) {
         break;
       }
 
-      if (!_.has(data, field.name) || data[field.name] === null) {
-        // ---> The field is missing
-        if (field.default) {
-          data[field.name] = field.default;
-        } else {
-          if (field.required && !ignoreRequired) {
-            errors.push(`Property '${field.path}' is missing'`);
-          }
-          continue;
+      await this.compute(record, fields);
+
+      for (let field of fields) {
+        const type  = Schema.getType(field.type);
+
+        field.path = opts.parentKey ? `${opts.parentKey}.${field.name}` : field.name;
+
+        if (!type) {
+          // ---> This type hasn't been registered
+          errors.push(`Property '${field.path}' has an unknown type '${field.type}'`);
+          break;
         }
-      }
 
-      // --> run type validation
-      let errs = await type.validate(data[field.name], field, opts);
-      let noErrors = !errs || !errs.length;
+        if (!_.has(record, field.name) || record[field.name] === null) {
+          // ---> The field is missing
+          if (field.default) {
+            record[field.name] = field.default;
+          } else {
+            if (field.required && !ignoreRequired) {
+              errors.push(`Property '${field.path}' is missing`);
+            }
+            continue;
+          }
+        }
 
-      if (noErrors && _.isFunction(field.validate)) {
-        // ---> use custom validator
-        errs = field.validate(data[field.name], field);
-      }
+        // --> run type validation
+        let errs = await type.validate(record[field.name], field, opts);
+        let noErrors = !errs || !errs.length;
 
-      if (errs) {
-        errs = _.isArray(errs) ? errs : [ errs ];
-        Array.prototype.push.apply(errors, errs);
+        if (noErrors && _.isFunction(field.validate)) {
+          // ---> use custom validator
+          errs = field.validate(record[field.name], field);
+        }
+
+        merge(errors, errs);
       }
     }
 
+    const valid = errors.length === 0;
+    if (!valid) {
+      return {
+        valid, errors,
+        data: {},
+        computed: {}
+      };
+    }
+
+    const data = _.omit(_.cloneDeep(record), _.map(computedFields, 'name'));
+
     return {
-      valid: errors.length === 0,
+      valid,
       errors,
-      data
+      data: data,
+      computed: record
     };
   }
 }

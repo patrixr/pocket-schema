@@ -61,7 +61,7 @@ describe("Schema", () => {
         age: 45
       });
       errors.should.have.lengthOf(1);
-      errors[0].should.equal("Property 'name' is missing'");
+      errors[0].should.equal("Property 'name' is missing");
     });
 
     it("Should use the specified default value if a field is missing ", async () => {
@@ -146,5 +146,65 @@ describe("Schema", () => {
         })
       ).errors.should.have.lengthOf(0);
     });
+  });
+
+  it("Should support computed fields", async () => {
+    const schema = new Schema({
+      additionalProperties: true,
+      fields: {
+        firstname: {
+          type: 'string',
+          default: 'john'
+        },
+        lastname: {
+          type: 'string'
+        },
+        fullname: {
+          type: 'string',
+          computed: true,
+          compute(data) {
+            return data.firstname + ' ' + data.lastname;
+          }
+        }
+      }
+    });
+
+    const { errors, data, computed } = await schema.validate({
+      lastname: 'smith',
+    });
+    errors.should.have.lengthOf(0);
+    computed.fullname.should.equal('john smith');
+    expect(data).to.not.have.property('fullname');
+  });
+
+  it("Should not computed fields if there is an error in non-computed fields", async () => {
+    const ran = false;
+    const schema = new Schema({
+      additionalProperties: true,
+      fields: {
+        firstname: {
+          type: 'string'
+        },
+        lastname: {
+          type: 'string',
+          required: true
+        },
+        fullname: {
+          type: 'string',
+          computed: true,
+          compute(data) {
+            ran = true;
+            return data.firstname + ' ' + data.lastname;
+          }
+        }
+      }
+    });
+
+    const { errors } = await schema.validate({
+      firstname: 'smith'
+    });
+    expect(ran).to.be.false;
+    errors.should.have.lengthOf(1);
+    errors[0].should.equal("Property \'lastname\' is missing");
   });
 });
