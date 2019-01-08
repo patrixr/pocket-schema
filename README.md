@@ -183,7 +183,7 @@ Schema.registerType('model', {
   aliases: [
     'record'
   ],
-  async validate(data, field : EmailField) {
+  async validate(data, field) {
     const recordId = data; 
     const record = await db.find({ id: recordId });
     
