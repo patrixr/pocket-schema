@@ -5,6 +5,7 @@
   "main": "index.js",
   "author": "Patrick R",
   "license": "MIT",
+  "repository": "patrixr/pocket-schema",
   "files": [
     "*.js",
     "**/*.js"
