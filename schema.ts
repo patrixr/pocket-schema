@@ -108,7 +108,7 @@ class Schema {
   }
 
   /**
-   * Sets values for computed properties
+   * Sets values for computed and default properties
    *
    * @param data
    * @param fields
@@ -120,6 +120,8 @@ class Schema {
           throw `Computed field '${field.name}' is missing the compute(data) method`;
         }
         data[field.name] = await field.compute(data);
+      } else if (_.isUndefined(data[field.name]) && !_.isArguments(field.default)) {
+          data[field.name] = field.default;
       }
     }
   }
@@ -171,14 +173,10 @@ class Schema {
 
         if (!_.has(record, field.name) || record[field.name] === null) {
           // ---> The field is missing
-          if (field.default) {
-            record[field.name] = field.default;
-          } else {
-            if (field.required && !ignoreRequired) {
-              errors.push(`Property '${field.path}' is missing`);
-            }
-            continue;
+          if (field.required && !ignoreRequired) {
+            errors.push(`Property '${field.path}' is missing`);
           }
+          continue;
         }
 
         // --> run type validation
