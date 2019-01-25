@@ -120,7 +120,7 @@ class Schema {
           throw `Computed field '${field.name}' is missing the compute(data) method`;
         }
         data[field.name] = await field.compute(data);
-      } else if (_.isUndefined(data[field.name]) && !_.isArguments(field.default)) {
+      } else if ((_.isUndefined(data[field.name]) || data[field.name] === null) && !_.isUndefined(field.default)) {
           data[field.name] = field.default;
       }
     }
