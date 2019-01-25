@@ -1,6 +1,6 @@
 {
   "name": "pocket-schema",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "description": "Object schema and validation",
   "main": "index.js",
   "author": "Patrick R",
